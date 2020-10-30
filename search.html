@@ -521,7 +521,8 @@
             // 发起请求，根据条件搜索
             this.loadData();
         },
-        watch:{
+        //TODO watch有问题
+        /*watch:{
             search:{
                 deep:true,
                 handler(val,old){
@@ -533,7 +534,7 @@
                     window.location.href = "http://www.leyou.com/search.html?" + ly.stringify(val);
                 }
             }
-        },
+        },*/
 
         components:{
             lyTop: () => import("./js/pages/top.js")
