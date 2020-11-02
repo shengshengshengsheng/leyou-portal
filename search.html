@@ -342,7 +342,7 @@
                 <div class="sui-pagination pagination-large">
                     <ul style="width: 550px">
                         <li :class="{prev:true,disabled:search.page === 1}">
-                            <a @click="prePage">«上一页</a>
+                            <a @click="prevPage">«上一页</a>
                         </li>
                         <li :class="{active: index(i) === search.page}" v-for="i in Math.min(5,totalPage)" :key="i">
                             <a @click="search.page=index(i)">{{index(i)}}</a>
@@ -522,7 +522,7 @@
             this.loadData();
         },
         //TODO watch有问题
-        /*watch:{
+        watch:{
             search:{
                 deep:true,
                 handler(val,old){
@@ -534,7 +534,7 @@
                     window.location.href = "http://www.leyou.com/search.html?" + ly.stringify(val);
                 }
             }
-        },*/
+        },
 
         components:{
             lyTop: () => import("./js/pages/top.js")
