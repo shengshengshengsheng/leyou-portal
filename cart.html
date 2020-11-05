@@ -264,7 +264,25 @@
     var cartVm = new Vue({
         el: "#cartApp",
         data: {
+            ly,
+            carts: [],// 购物车数据
         },
+        created() {
+            this.loadCarts();
+        },
+        methods: {
+            loadCarts() {
+                // 先判断登录状态
+                ly.verifyUser().then(() => {
+                    // 已登录
+
+                }).catch(() => {
+                    // 未登录
+                    this.carts = ly.store.get("carts") || [];
+                    this.selected = this.carts;
+                })
+            }
+        }
         components: {
             shortcut: () => import("/js/pages/shortcut.js")
         }
