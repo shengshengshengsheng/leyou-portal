@@ -44,7 +44,7 @@
                         <div class="cart-list">
                             <ul class="goods-list yui3-g" v-for="(cart,i) in carts" :key="i">
                                 <li class="yui3-u-1-24">
-                                    <input type="checkbox" name="" value="" />
+                                    <input type="checkbox" name="" v-model="selected" :value="cart" />
                                 </li>
                                 <li class="yui3-u-11-24">
                                     <div class="good-item">
@@ -52,8 +52,8 @@
                                         <div class="item-msg">
 												<span >
                                                     {{cart.title}} <br/>
-													<span v-for="(v,k) in JSON.parse(JSON.parse(cart.ownSpec))"
-                                                          :key="k">{{v}}<br/></span>
+													<!--<span v-for="(v,k) in JSON.parse(cart.ownSpec)"
+                                                          :key="k">{{v}}<br/></span>-->
 												</span>
                                         </div>
                                     </div>
@@ -61,13 +61,13 @@
 
                                 <li class="yui3-u-1-8"><span style="line-height:70px " class="price">{{ly.formatPrice(cart.price)}}</span></li>
                                 <li class="yui3-u-1-8" style="padding-top: 20px">
-                                    <a href="javascript:void(0)" class="increment mins">-</a>
+                                    <a href="javascript:void(0)" class="increment mins" @click="decrement(cart)">-</a>
                                     <input autocomplete="off" type="text" value="1" v-model="cart.num" minnum="1" class="itxt" />
-                                    <a href="javascript:void(0)" class="increment plus">+</a>
+                                    <a href="javascript:void(0)" class="increment plus" @click="increment(cart)">+</a>
                                 </li>
                                 <li class="yui3-u-1-8"><span style="line-height:70px " class="sum">{{ly.formatPrice(cart.price * cart.num)}}</span></li>
                                 <li class="yui3-u-1-8">
-                                    <a href="#none">删除</a><br />
+                                    <a href="#none" @click="deleteCart(i)">删除</a><br />
                                     <a href="#none">移到我的关注</a>
                                 </li>
                             </ul>
@@ -89,7 +89,7 @@
                 <div class="toolbar">
                     <div class="chosed">已选择<span>0</span>件商品</div>
                     <div class="sumprice">
-                        <span><em>总价（不含运费） ：</em><i class="summoney">8848.00</i></span>
+                        <span><em>总价（不含运费） ：</em><i class="summoney">{{totalPrice}}</i></span>
                         <span><em>已节省：</em><i>-¥20.00</i></span>
                     </div>
                     <div class="sumbtn">
@@ -267,9 +267,15 @@
         data: {
             ly,
             carts: [],// 购物车数据
+            selected :[] //记录购物车中选中的商品
         },
         created() {
             this.loadCarts();
+        },
+        computed: {
+            totalPrice() {
+                return ly.formatPrice(this.selected.reduce((c1, c2) => c1 + c2.num * c2.price, 0));
+            }
         },
         methods: {
             loadCarts() {
@@ -279,8 +285,38 @@
 
                 }).catch(() => {
                     // 未登录
-                    this.carts = ly.store.get("carts") || [];
+                    this.carts = ly.store.get("carts");
                     this.selected = this.carts;
+                })
+            },
+            increment(c) {
+                c.num++;
+                ly.verifyUser().then(() => {
+                    // TODO 已登录，向后台发起请求
+                }).catch(() => {
+                    // 未登录，直接操作本地数据
+                    ly.store.set("carts", this.carts);
+                })
+            },
+            decrement(c) {
+                if (c.num <= 1) {
+                    return;
+                }
+                c.num--;
+                ly.verifyUser().then(() => {
+                    // TODO 已登录，向后台发起请求
+                }).catch(() => {
+                    // 未登录，直接操作本地数据
+                    ly.store.set("carts", this.carts);
+                })
+            },
+            deleteCart(i){
+                ly.verifyUser().then(res=>{
+                    // TODO，已登录购物车
+                }).catch(()=>{
+                    // 未登录购物车
+                    this.carts.splice(i, 1);
+                    ly.store.set("carts", this.carts);
                 })
             }
         },
